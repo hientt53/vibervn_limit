@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Viber Balance</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="popup-body">
+  <div class="popup-container">
+    <div class="popup-header">
+      <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2L2 7l10 5 10-5-10-5z" fill="var(--sys-blue)"/>
+        <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="var(--sys-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span class="app-title">Viber Balance</span>
+      <button class="icon-btn" id="btn-settings" title="Settings">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+      </button>
+
+    </div>
+
+    <!-- Tab Bar -->
+    <div class="tab-bar">
+      <button class="tab-btn active" data-tab="balance">Balance</button>
+      <button class="tab-btn" data-tab="logs">Logs</button>
+    </div>
+
+    <!-- ═══ Balance View ═══ -->
+    <div class="tab-content active" id="view-balance">
+      <div class="battery-section">
+        <div class="battery-wrap">
+          <div class="battery-shell">
+            <div class="battery-inner">
+              <div class="battery-fill" id="battery-fill"></div>
+            </div>
+            <div class="battery-nub"></div>
+          </div>
+        </div>
+        <div class="pct-text" id="pct-text">—</div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-box">
+          <div class="stat-label">Remaining</div>
+          <div class="stat-value" id="stat-remaining">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Used</div>
+          <div class="stat-value used" id="stat-used">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Total</div>
+          <div class="stat-value" id="stat-total">—</div>
+        </div>
+      </div>
+
+      <div class="reset-row" id="reset-row" style="display:none">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span id="reset-text">—</span>
+      </div>
+
+      <!-- Usage Chart -->
+      <div class="chart-section" id="usage-chart-section" style="display:none">
+        <div class="chart-title">Daily Usage (7 days)</div>
+        <div class="usage-chart" id="usage-chart"></div>
+      </div>
+
+      <!-- Model Breakdown -->
+      <div class="chart-section" id="model-breakdown-section" style="display:none">
+        <div class="chart-title">Cost by Model</div>
+        <div class="model-breakdown" id="model-breakdown"></div>
+      </div>
+
+      <div class="footer-row">
+        <span class="last-update" id="last-update">Fetching…</span>
+        <button class="refresh-btn" id="btn-refresh">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <polyline points="1 20 1 14 7 14"></polyline>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+          </svg>
+          Refresh
+        </button>
+      </div>
+    </div>
+
+    <!-- ═══ Logs View ═══ -->
+    <div class="tab-content" id="view-logs">
+      <!-- Filters + Export -->
+      <div class="log-filters">
+        <select id="filter-model" title="Filter by model">
+          <option value="">All Models</option>
+        </select>
+        <select id="filter-time" title="Time range">
+          <option value="">All Time</option>
+          <option value="15m">Last 15 min</option>
+          <option value="30m">Last 30 min</option>
+          <option value="1h">Last 1 hour</option>
+          <option value="3h">Last 3 hours</option>
+          <option value="6h">Last 6 hours</option>
+          <option value="today" selected>Today</option>
+          <option value="24h">Last 24 hours</option>
+          <option value="7d">Last 7 days</option>
+          <option value="30d">Last 30 days</option>
+          <option value="month">This month</option>
+        </select>
+        <button class="export-btn" id="btn-export" title="Export CSV">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+            <polyline points="7 10 12 15 17 10"></polyline>
+            <line x1="12" y1="15" x2="12" y2="3"></line>
+          </svg>
+          CSV
+        </button>
+      </div>
+
+      <!-- Stats summary -->
+      <div class="log-stats" id="log-stats" style="display:none">
+        <div class="stat-box">
+          <div class="stat-label">Requests</div>
+          <div class="stat-value" id="stat-requests">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Tokens</div>
+          <div class="stat-value" id="stat-tokens">—</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-label">Cost</div>
+          <div class="stat-value used" id="stat-cost">—</div>
+        </div>
+      </div>
+
+      <!-- Log items -->
+      <div class="log-list" id="log-list">
+        <div class="log-empty">Loading…</div>
+      </div>
+
+      <!-- Pagination -->
+      <div class="log-pagination" id="log-pagination">
+        <button class="page-btn" id="btn-prev" disabled>← Prev</button>
+        <span class="page-info" id="page-info">1 / 1</span>
+        <button class="page-btn" id="btn-next" disabled>Next →</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

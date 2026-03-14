@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings — Viber Balance</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="settings-body">
+  <div class="settings-container">
+    <div class="settings-header">
+      <svg class="settings-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"></circle>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+      </svg>
+      <span class="settings-title-text">Settings</span>
+
+    </div>
+
+    <div class="form-group">
+      <label for="token-input">API Token</label>
+      <div class="token-wrap">
+        <input type="password" id="token-input" placeholder="Paste your Bearer token…" autocomplete="off" />
+        <button class="toggle-btn" id="toggle-token" title="Toggle visibility">
+          <svg id="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+            <circle cx="12" cy="12" r="3"></circle>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="interval-input">Refresh Interval (min)</label>
+      <input type="number" id="interval-input" min="1" max="60" value="5" />
+    </div>
+
+    <div class="form-group checkbox-group">
+      <label class="checkbox-label">
+        <input type="checkbox" id="show-text-check" checked />
+        <span>Show % in global status bar</span>
+      </label>
+    </div>
+
+    <div class="form-group">
+      <label for="theme-select">Theme</label>
+      <select id="theme-select">
+        <option value="system">System</option>
+        <option value="light">Light</option>
+        <option value="dark">Dark</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="alert-threshold">Alert When Balance Below (%)</label>
+      <input type="number" id="alert-threshold" min="0" max="100" value="20" />
+    </div>
+
+    <div class="form-group checkbox-group">
+      <label class="checkbox-label">
+        <input type="checkbox" id="auto-start-check" />
+        <span>Launch at login</span>
+      </label>
+    </div>
+
+    <div class="settings-actions">
+      <button class="btn-save" id="btn-save">Save &amp; Apply</button>
+      <button class="btn-cancel" id="btn-cancel">Cancel</button>
+    </div>
+
+    <div class="save-status" id="save-status"></div>
+  </div>
+  <script src="settings.js"></script>
+</body>
+</html>
