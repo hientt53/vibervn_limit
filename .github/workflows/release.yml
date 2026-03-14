@@ -103,7 +103,6 @@ jobs:
             **/*.app.tar.gz
             **/*.app.tar.gz.sig
             **/*.deb
-            **/*.rpm
             **/*.AppImage
             **/*.AppImage.tar.gz
             **/*.AppImage.tar.gz.sig
