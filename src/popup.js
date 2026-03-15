@@ -541,5 +541,10 @@ window.addEventListener('DOMContentLoaded', async () => {
   window.__TAURI__.event.listen('balance-error', (e) => {
     document.getElementById('last-update').textContent = `Error: ${e.payload}`;
   });
-  window.__TAURI__.event.listen('settings-changed', () => applyTheme());
+  window.__TAURI__.event.listen('settings-changed', () => {
+    applyTheme();
+    loadBalance();
+    loadModelBreakdown();
+    loadUsageChart();
+  });
 });

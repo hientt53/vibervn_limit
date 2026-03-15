@@ -83,6 +83,7 @@ async fn save_settings(
     store::save(&app, &new_settings).map_err(|e| e.to_string())?;
     // Trigger immediate refresh
     app.emit("settings-changed", ()).ok();
+    app.emit("refresh-requested", ()).ok();
     Ok(())
 }
 
