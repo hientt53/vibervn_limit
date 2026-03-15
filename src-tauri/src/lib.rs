@@ -81,9 +81,31 @@ async fn save_settings(
         *s = new_settings.clone();
     }
     store::save(&app, &new_settings).map_err(|e| e.to_string())?;
-    // Trigger immediate refresh
     app.emit("settings-changed", ()).ok();
-    app.emit("refresh-requested", ()).ok();
+
+    // Fetch balance immediately if token is set
+    let token = new_settings.token.clone();
+    if !token.is_empty() {
+        let state_clone = state.inner().clone();
+        let app_clone = app.clone();
+        tauri::async_runtime::spawn(async move {
+            let show_text = state_clone.settings.lock().unwrap().show_percent_text;
+            match api::fetch_balance(&token).await {
+                Ok(balance) => {
+                    let label = format_label(&balance, show_text);
+                    update_tray(&app_clone, Some(balance.percent), show_text, &label);
+                    *state_clone.last_balance.lock().unwrap() = Some(balance.clone());
+                    app_clone.emit("balance-updated", balance).ok();
+                }
+                Err(e) => {
+                    eprintln!("API error after settings save: {e}");
+                    update_tray(&app_clone, None, show_text, "⚠ Error");
+                    app_clone.emit("balance-error", e.to_string()).ok();
+                }
+            }
+        });
+    }
+
     Ok(())
 }
 
