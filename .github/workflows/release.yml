@@ -18,11 +18,25 @@ jobs:
       matrix:
         include:
           - platform: macos-latest
-            args: --target universal-apple-darwin
+            args: '--target aarch64-apple-darwin'
+            rust_target: 'aarch64-apple-darwin'
+            target_dir: 'aarch64-apple-darwin'
+            artifact_name: 'artifacts-macos-arm64'
+          - platform: macos-latest
+            args: '--target x86_64-apple-darwin'
+            rust_target: 'x86_64-apple-darwin'
+            target_dir: 'x86_64-apple-darwin'
+            artifact_name: 'artifacts-macos-x64'
           - platform: ubuntu-22.04
             args: ''
+            rust_target: ''
+            target_dir: ''
+            artifact_name: 'artifacts-linux'
           - platform: windows-latest
             args: ''
+            rust_target: ''
+            target_dir: ''
+            artifact_name: 'artifacts-windows'
 
     runs-on: ${{ matrix.platform }}
     steps:
@@ -34,7 +48,7 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
         with:
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+          targets: ${{ matrix.rust_target }}
 
       - uses: Swatinem/rust-cache@v2
         with:
@@ -60,11 +74,11 @@ jobs:
         if: matrix.platform == 'macos-latest'
         uses: actions/upload-artifact@v4
         with:
-          name: artifacts-macos
+          name: ${{ matrix.artifact_name }}
           path: |
-            src-tauri/target/universal-apple-darwin/release/bundle/dmg/*.dmg
-            src-tauri/target/universal-apple-darwin/release/bundle/macos/*.app.tar.gz
-            src-tauri/target/universal-apple-darwin/release/bundle/macos/*.app.tar.gz.sig
+            src-tauri/target/${{ matrix.target_dir }}/release/bundle/dmg/*.dmg
+            src-tauri/target/${{ matrix.target_dir }}/release/bundle/macos/*.app.tar.gz
+            src-tauri/target/${{ matrix.target_dir }}/release/bundle/macos/*.app.tar.gz.sig
 
       - name: Upload artifacts (Linux)
         if: matrix.platform == 'ubuntu-22.04'
@@ -108,4 +122,3 @@ jobs:
             **/*.AppImage.tar.gz.sig
             **/*.msi
             **/*.exe
-
