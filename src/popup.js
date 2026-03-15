@@ -1,5 +1,11 @@
-const { invoke } = window.__TAURI__.core;
-const { listen } = window.__TAURI__.event;
+function waitForTauri() {
+  return new Promise((resolve) => {
+    if (window.__TAURI__) { resolve(); return; }
+    const id = setInterval(() => {
+      if (window.__TAURI__) { clearInterval(id); resolve(); }
+    }, 50);
+  });
+}
 
 const TAB_SIZES = {
   balance: { w: 320, h: 310 },
@@ -22,7 +28,7 @@ async function resizeForTab(tab) {
 
 async function loadBalance() {
   try {
-    const balance = await invoke('get_balance');
+    const balance = await window.__TAURI__.core.invoke('get_balance');
     if (balance) updateUI(balance);
   } catch (e) {
     console.error('loadBalance error:', e);
@@ -108,7 +114,7 @@ async function loadLogs(page = 1) {
   list.innerHTML = '<div class="log-empty">Loading…</div>';
 
   try {
-    const result = await invoke('get_logs', {
+    const result = await window.__TAURI__.core.invoke('get_logs', {
       page: logState.page,
       pageSize: logState.pageSize,
       logType: 0,
@@ -190,7 +196,7 @@ function escHtml(s) {
 
 async function loadLogStats() {
   try {
-    const data = await invoke('get_log_stats', {
+    const data = await window.__TAURI__.core.invoke('get_log_stats', {
       logType: 0,
       modelName: logState.modelName || null,
       startTimestamp: logState.startTimestamp,
@@ -313,11 +319,11 @@ document.querySelectorAll('.tab-btn').forEach((btn) => {
 
 document.getElementById('btn-refresh').addEventListener('click', async () => {
   document.getElementById('last-update').textContent = 'Refreshing…';
-  await invoke('refresh_now');
+  await window.__TAURI__.core.invoke('refresh_now');
 });
 
 document.getElementById('btn-settings').addEventListener('click', async () => {
-  await invoke('open_settings_window');
+  await window.__TAURI__.core.invoke('open_settings_window');
 });
 
 
@@ -328,7 +334,7 @@ document.getElementById('btn-export').addEventListener('click', async () => {
   btn.disabled = true;
   btn.textContent = 'Exporting…';
   try {
-    const csv = await invoke('export_logs_csv', {
+    const csv = await window.__TAURI__.core.invoke('export_logs_csv', {
       logType: 0,
       modelName: logState.modelName || null,
       startTimestamp: logState.startTimestamp,
@@ -383,7 +389,7 @@ async function loadModelBreakdown() {
   const section = document.getElementById('model-breakdown');
   if (!section) return;
   try {
-    const data = await invoke('get_log_stats', {
+    const data = await window.__TAURI__.core.invoke('get_log_stats', {
       logType: 0,
       modelName: null,
       startTimestamp: logState.startTimestamp,
@@ -434,7 +440,7 @@ async function loadUsageChart() {
   const section = document.getElementById('usage-chart');
   if (!section) return;
   try {
-    const data = await invoke('get_log_stats', {
+    const data = await window.__TAURI__.core.invoke('get_log_stats', {
       logType: 0,
       modelName: null,
       startTimestamp: Math.floor(Date.now() / 1000) - 7 * 86400,
@@ -492,14 +498,14 @@ document.addEventListener('keydown', async (e) => {
   if (mod && e.key === 'r') {
     e.preventDefault();
     document.getElementById('last-update').textContent = 'Refreshing…';
-    await invoke('refresh_now');
+    await window.__TAURI__.core.invoke('refresh_now');
   } else if (mod && e.key === 'w') {
     e.preventDefault();
     const { getCurrentWebviewWindow } = window.__TAURI__.webviewWindow;
     getCurrentWebviewWindow().close();
   } else if (mod && e.key === ',') {
     e.preventDefault();
-    await invoke('open_settings_window');
+    await window.__TAURI__.core.invoke('open_settings_window');
   }
 });
 
@@ -507,7 +513,7 @@ document.addEventListener('keydown', async (e) => {
 
 async function applyTheme() {
   try {
-    const s = await invoke('get_settings');
+    const s = await window.__TAURI__.core.invoke('get_settings');
     const theme = s.theme || 'system';
     document.documentElement.classList.remove('theme-light', 'theme-dark');
     if (theme === 'light') {
@@ -522,17 +528,18 @@ async function applyTheme() {
 // ── Init ──────────────────────────────────
 
 window.addEventListener('DOMContentLoaded', async () => {
+  await waitForTauri();
   await applyTheme();
   await loadBalance();
   loadModelBreakdown();
   loadUsageChart();
-  listen('balance-updated', (e) => {
+  window.__TAURI__.event.listen('balance-updated', (e) => {
     updateUI(e.payload);
     loadModelBreakdown();
     loadUsageChart();
   });
-  listen('balance-error', (e) => {
+  window.__TAURI__.event.listen('balance-error', (e) => {
     document.getElementById('last-update').textContent = `Error: ${e.payload}`;
   });
-  listen('settings-changed', () => applyTheme());
+  window.__TAURI__.event.listen('settings-changed', () => applyTheme());
 });
