@@ -6,6 +6,7 @@ node_modules/
 dist/
 build/
 out/
+src-tauri/target/
 
 # IDE
 .idea/
@@ -25,3 +26,4 @@ Thumbs.db
 # Logs
 *.log
 npm-debug.log*
+test_icon.rs
