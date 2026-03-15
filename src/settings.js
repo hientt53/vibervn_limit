@@ -1,8 +1,15 @@
-const { invoke } = window.__TAURI__.core;
+function waitForTauri() {
+  return new Promise((resolve) => {
+    if (window.__TAURI__) { resolve(); return; }
+    const id = setInterval(() => {
+      if (window.__TAURI__) { clearInterval(id); resolve(); }
+    }, 50);
+  });
+}
 
 async function load() {
   try {
-    const s = await invoke('get_settings');
+    const s = await window.__TAURI__.core.invoke('get_settings');
     document.getElementById('token-input').value = s.token || '';
     document.getElementById('interval-input').value = s.refresh_minutes || 5;
     document.getElementById('show-text-check').checked = s.show_percent_text !== false;
@@ -58,9 +65,9 @@ document.getElementById('btn-save').addEventListener('click', async () => {
     auto_start: document.getElementById('auto-start-check').checked,
   };
   try {
-    await invoke('save_settings', { newSettings: settings });
+    await window.__TAURI__.core.invoke('save_settings', { newSettings: settings });
     // Sync OS auto-start with setting
-    await invoke('toggle_autostart', { enabled: settings.auto_start }).catch(() => {});
+    await window.__TAURI__.core.invoke('toggle_autostart', { enabled: settings.auto_start }).catch(() => {});
     const status = document.getElementById('save-status');
     status.textContent = '✓ Saved! Refreshing balance…';
     status.classList.add('success');
@@ -93,4 +100,7 @@ document.addEventListener('keydown', (e) => {
   }
 });
 
-window.addEventListener('DOMContentLoaded', load);
+window.addEventListener('DOMContentLoaded', async () => {
+  await waitForTauri();
+  await load();
+});
