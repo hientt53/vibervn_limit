@@ -19,17 +19,6 @@
         "decorations": true,
         "transparent": false,
         "visible": false
-      },
-      {
-        "label": "settings",
-        "url": "settings.html",
-        "title": "Settings",
-        "width": 380,
-        "height": 370,
-        "resizable": false,
-        "decorations": true,
-        "transparent": false,
-        "visible": false
       }
     ],
     "macOSPrivateApi": true,

@@ -116,22 +116,8 @@ async fn refresh_now(app: AppHandle) -> Result<(), String> {
 }
 
 #[tauri::command]
-async fn open_settings_window(app: AppHandle) -> Result<(), String> {
-    open_or_focus_window(&app, "settings", "settings.html", "Settings", 380, 480);
-    Ok(())
-}
-
-#[tauri::command]
 async fn hide_popup(app: AppHandle) -> Result<(), String> {
     if let Some(w) = app.get_webview_window("popup") {
-        w.hide().map_err(|e| e.to_string())?;
-    }
-    Ok(())
-}
-
-#[tauri::command]
-async fn hide_settings(app: AppHandle) -> Result<(), String> {
-    if let Some(w) = app.get_webview_window("settings") {
         w.hide().map_err(|e| e.to_string())?;
     }
     Ok(())
@@ -406,7 +392,7 @@ pub fn run() {
                 .on_menu_event(move |app, event| match event.id.as_ref() {
                     "open" => { open_or_focus_window(app, "popup", "index.html", "Viber Balance", 320, 310); }
                     "refresh" => { app.emit("refresh-requested", ()).ok(); }
-                    "settings" => { open_or_focus_window(app, "settings", "settings.html", "Settings", 380, 480); }
+                    "settings" => { open_or_focus_window(app, "popup", "index.html", "Viber Balance", 320, 310); }
                     "show-text" => { app.emit("toggle-text", ()).ok(); }
                     "quit" => { app.exit(0); }
                     _ => {}
@@ -434,9 +420,7 @@ pub fn run() {
             get_settings,
             save_settings,
             refresh_now,
-            open_settings_window,
             hide_popup,
-            hide_settings,
             toggle_autostart,
             get_logs,
             get_log_stats,
