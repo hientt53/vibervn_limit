@@ -10,6 +10,14 @@ A macOS menu bar app built with Tauri + Rust that monitors your [Viber VN](https
 
 Get the latest release from the [Releases page](https://github.com/hientt53/vibervn_limit/releases).
 
+**macOS Note:** If you see `"Viber Balance" is damaged and can't be opened`, run this in Terminal:
+
+```bash
+xattr -cr /Applications/Viber\ Balance.app
+```
+
+This is needed because the app isn't signed with an Apple Developer certificate.
+
 ## Features
 
 - Menu bar tray icon with a live battery-style indicator showing remaining balance %
