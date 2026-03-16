@@ -44,10 +44,10 @@ body {
 .popup-body { width: 100%; min-height: 100%; }
 
 .popup-container {
-  padding: 16px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
   height: 100%;
   box-sizing: border-box;
 }
@@ -65,9 +65,9 @@ body {
   background: transparent;
   border: none;
   color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 600;
-  padding: 5px 0;
+  padding: 6px 0;
   border-radius: 5px;
   cursor: default;
   transition: all 0.15s;
@@ -83,7 +83,7 @@ body {
 .tab-content {
   display: none;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
 }
 .tab-content.active {
   display: flex;
@@ -265,80 +265,104 @@ body {
 
 
 
-/* Battery Section */
-.battery-section {
+/* Progress Ring Section */
+.progress-ring-section {
   display: flex;
   align-items: center;
-  gap: 16px;
+  justify-content: center;
+  position: relative;
+  width: 120px;
+  height: 120px;
+  margin: 0 auto;
 }
 
-.battery-wrap { flex: 1; }
-
-.battery-shell {
-  display: flex;
-  align-items: center;
-  gap: 3px;
+.progress-ring {
+  transform: rotate(-90deg);
 }
 
-/* macOS style battery outline */
-.battery-inner {
-  flex: 1;
-  height: 26px;
-  border: 1px solid var(--border-strong);
-  border-radius: 5px;
-  padding: 2px;
-  background: rgba(0, 0, 0, 0.1);
-  overflow: hidden;
+.progress-ring-bg {
+  fill: none;
+  stroke: var(--border);
+  stroke-width: 8;
 }
 
-.battery-nub {
-  width: 3px;
-  height: 10px;
-  background: var(--border-strong);
-  border-radius: 0 2px 2px 0;
+.progress-ring-fill {
+  fill: none;
+  stroke: var(--sys-green);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 326.73;
+  stroke-dashoffset: 326.73;
+  transition: stroke-dashoffset 0.6s ease, stroke 0.3s ease;
 }
 
-.battery-fill {
-  height: 100%;
-  border-radius: 2px;
-  width: 0%;
-  transition: width 0.5s ease;
-  background: var(--sys-green);
-}
-.battery-fill.yellow { background: var(--sys-orange); }
-.battery-fill.red { background: var(--sys-red); }
-
-.pct-text {
-  font-size: 32px;
+.progress-ring-section .pct-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 36px;
   font-weight: 300;
   letter-spacing: -1px;
-  min-width: 76px;
-  text-align: right;
   color: var(--text-main);
+  text-align: center;
 }
 
 /* Stats */
-.stats-row {
+.stats-hero {
   display: flex;
-  gap: 10px;
+  flex-direction: column;
+  gap: 8px;
 }
 .stat-box {
-  flex: 1;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
   padding: 8px;
   text-align: center;
 }
-.stat-label { 
-  font-size: 10px; 
-  color: var(--text-muted); 
-  margin-bottom: 2px; 
+.hero-stat {
+  padding: 12px 8px;
+}
+.hero-stat .stat-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.hero-stat .stat-value {
+  font-size: 24px;
+  font-weight: 600;
+  color: var(--sys-green);
+}
+.stats-secondary {
+  display: flex;
+  gap: 10px;
+}
+.stats-secondary .stat-box {
+  flex: 1;
+}
+.stats-secondary .stat-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 2px;
   font-weight: 500;
 }
-.stat-value { 
-  font-size: 13px; 
-  font-weight: 500; 
+.stats-secondary .stat-value {
+  font-size: 14px;
+  font-weight: 500;
+}
+.stat-label {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 2px;
+  font-weight: 500;
+}
+.stat-value {
+  font-size: 14px;
+  font-weight: 500;
 }
 .stat-value.used { color: var(--sys-red); }
 
@@ -351,7 +375,7 @@ body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 8px;
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-muted);
 }
 .reset-row svg {

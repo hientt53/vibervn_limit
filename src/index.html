@@ -14,13 +14,6 @@
         <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="var(--sys-blue)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
       <span class="app-title">Viber Balance</span>
-      <button class="icon-btn" id="btn-settings" title="Settings">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-        </svg>
-      </button>
-
     </div>
 
     <!-- Tab Bar -->
@@ -32,30 +25,28 @@
 
     <!-- ═══ Balance View ═══ -->
     <div class="tab-content active" id="view-balance">
-      <div class="battery-section">
-        <div class="battery-wrap">
-          <div class="battery-shell">
-            <div class="battery-inner">
-              <div class="battery-fill" id="battery-fill"></div>
-            </div>
-            <div class="battery-nub"></div>
-          </div>
-        </div>
+      <div class="progress-ring-section">
+        <svg class="progress-ring" width="120" height="120" viewBox="0 0 120 120">
+          <circle class="progress-ring-bg" cx="60" cy="60" r="52" />
+          <circle class="progress-ring-fill" id="progress-ring-fill" cx="60" cy="60" r="52" />
+        </svg>
         <div class="pct-text" id="pct-text">—</div>
       </div>
 
-      <div class="stats-row">
-        <div class="stat-box">
+      <div class="stats-hero">
+        <div class="stat-box hero-stat">
           <div class="stat-label">Remaining</div>
           <div class="stat-value" id="stat-remaining">—</div>
         </div>
-        <div class="stat-box">
-          <div class="stat-label">Used</div>
-          <div class="stat-value used" id="stat-used">—</div>
-        </div>
-        <div class="stat-box">
-          <div class="stat-label">Total</div>
-          <div class="stat-value" id="stat-total">—</div>
+        <div class="stats-secondary">
+          <div class="stat-box">
+            <div class="stat-label">Used</div>
+            <div class="stat-value used" id="stat-used">—</div>
+          </div>
+          <div class="stat-box">
+            <div class="stat-label">Total</div>
+            <div class="stat-value" id="stat-total">—</div>
+          </div>
         </div>
       </div>
 

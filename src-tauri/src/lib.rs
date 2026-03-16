@@ -1,6 +1,6 @@
 use tauri::{
     image::Image,
-    menu::{CheckMenuItem, Menu, MenuItem, PredefinedMenuItem},
+    menu::{Menu, MenuItem, PredefinedMenuItem},
     tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent},
     AppHandle, Emitter, Manager,
 };
@@ -370,11 +370,8 @@ pub fn run() {
             app.manage(state.clone());
 
             // Build tray
-            let show_text_item = CheckMenuItem::with_id(app, "show-text", "Show % Text", true, true, None::<&str>)?;
             let tray_menu = Menu::with_items(app, &[
                 &MenuItem::with_id(app, "open", "Open", true, None::<&str>)?,
-                &MenuItem::with_id(app, "refresh", "Refresh Now", true, None::<&str>)?,
-                &show_text_item,
                 &PredefinedMenuItem::separator(app)?,
                 &MenuItem::with_id(app, "settings", "Settings", true, None::<&str>)?,
                 &PredefinedMenuItem::separator(app)?,
@@ -390,17 +387,15 @@ pub fn run() {
                 .menu(&tray_menu)
                 .show_menu_on_left_click(false)
                 .on_menu_event(move |app, event| match event.id.as_ref() {
-                    "open" => { open_or_focus_window(app, "popup", "index.html", "Viber Balance", 320, 310); }
-                    "refresh" => { app.emit("refresh-requested", ()).ok(); }
-                    "settings" => { open_or_focus_window(app, "popup", "index.html", "Viber Balance", 320, 310); }
-                    "show-text" => { app.emit("toggle-text", ()).ok(); }
+                    "open" => { open_or_focus_window(app, "popup", "index.html", "Viber Balance", 640, 620); }
+                    "settings" => { open_or_focus_window(app, "popup", "index.html", "Viber Balance", 640, 620); }
                     "quit" => { app.exit(0); }
                     _ => {}
                 })
                 .on_tray_icon_event(|tray, event| {
                     if let TrayIconEvent::Click { button: MouseButton::Left, button_state: MouseButtonState::Up, .. } = event {
                         let app = tray.app_handle();
-                        open_or_focus_window(app, "popup", "index.html", "Viber Balance", 320, 310);
+                        open_or_focus_window(app, "popup", "index.html", "Viber Balance", 640, 620);
                     }
                 })
                 .build(app)?;

@@ -8,9 +8,9 @@ function waitForTauri() {
 }
 
 const TAB_SIZES = {
-  balance:  { w: 320, h: 310 },
-  logs:     { w: 380, h: 560 },
-  settings: { w: 380, h: 480 },
+  balance:  { w: 640, h: 620 },
+  logs:     { w: 760, h: 1120 },
+  settings: { w: 760, h: 960 },
 };
 
 async function resizeForTab(tab) {
@@ -40,12 +40,17 @@ function updateUI(balance) {
   const pct = balance.unlimited ? 100 : balance.percent;
   document.getElementById('pct-text').textContent = balance.unlimited ? '∞' : `${Math.round(pct)}%`;
 
-  const fill = document.getElementById('battery-fill');
-  fill.style.width = `${pct}%`;
-  fill.className = 'battery-fill';
-  if (!balance.unlimited) {
-    if (pct <= 20) fill.classList.add('red');
-    else if (pct <= 50) fill.classList.add('yellow');
+  const ring = document.getElementById('progress-ring-fill');
+  const circumference = 326.73;
+  const offset = circumference - (pct / 100) * circumference;
+  ring.style.strokeDashoffset = offset;
+
+  if (balance.unlimited || pct > 50) {
+    ring.style.stroke = 'var(--sys-green)';
+  } else if (pct > 20) {
+    ring.style.stroke = 'var(--sys-orange)';
+  } else {
+    ring.style.stroke = 'var(--sys-red)';
   }
 
   const fmt = (n) => `$${n.toFixed(2)}`;
@@ -328,11 +333,6 @@ document.getElementById('btn-refresh').addEventListener('click', async () => {
   document.getElementById('last-update').textContent = 'Refreshing…';
   await window.__TAURI__.core.invoke('refresh_now');
 });
-
-document.getElementById('btn-settings').addEventListener('click', () => {
-  switchTab('settings');
-});
-
 
 // ── Export CSV ─────────────────────────────
 
