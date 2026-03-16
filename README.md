@@ -4,7 +4,7 @@ A macOS menu bar app built with Tauri + Rust that monitors your [Viber VN](https
 
 ## Demo
 
-<video src="https://github.com/hientt53/vibervn_limit/releases/download/v0.1.2/showcase.mp4" controls width="600"></video>
+![Demo](showcase.gif)
 
 ## Features
 
