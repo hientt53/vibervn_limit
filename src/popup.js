@@ -8,8 +8,9 @@ function waitForTauri() {
 }
 
 const TAB_SIZES = {
-  balance: { w: 320, h: 310 },
-  logs:    { w: 380, h: 560 },
+  balance:  { w: 320, h: 310 },
+  logs:     { w: 380, h: 560 },
+  settings: { w: 380, h: 480 },
 };
 
 async function resizeForTab(tab) {
@@ -296,23 +297,29 @@ function applyTimeRange(preset) {
 // ── Tab Switching ─────────────────────────
 
 let logsLoaded = false;
+let settingsLoaded = false;
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-btn').forEach((b) => {
+    b.classList.toggle('active', b.dataset.tab === tab);
+  });
+  document.querySelectorAll('.tab-content').forEach((el) => el.classList.remove('active'));
+  document.getElementById(`view-${tab}`).classList.add('active');
+  resizeForTab(tab);
+
+  if (tab === 'logs' && !logsLoaded) {
+    logsLoaded = true;
+    applyTimeRange(logState.timeRange);
+    loadLogs(1);
+  }
+  if (tab === 'settings' && !settingsLoaded) {
+    settingsLoaded = true;
+    loadSettings();
+  }
+}
 
 document.querySelectorAll('.tab-btn').forEach((btn) => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
-    btn.classList.add('active');
-
-    const tab = btn.dataset.tab;
-    document.querySelectorAll('.tab-content').forEach((el) => el.classList.remove('active'));
-    document.getElementById(`view-${tab}`).classList.add('active');
-    resizeForTab(tab);
-
-    if (tab === 'logs' && !logsLoaded) {
-      logsLoaded = true;
-      applyTimeRange(logState.timeRange);
-      loadLogs(1);
-    }
-  });
+  btn.addEventListener('click', () => switchTab(btn.dataset.tab));
 });
 
 // ── Event Listeners ───────────────────────
@@ -322,8 +329,8 @@ document.getElementById('btn-refresh').addEventListener('click', async () => {
   await window.__TAURI__.core.invoke('refresh_now');
 });
 
-document.getElementById('btn-settings').addEventListener('click', async () => {
-  await window.__TAURI__.core.invoke('open_settings_window');
+document.getElementById('btn-settings').addEventListener('click', () => {
+  switchTab('settings');
 });
 
 
@@ -491,6 +498,72 @@ async function loadUsageChart() {
   }
 }
 
+// ── Settings ──────────────────────────────
+
+async function loadSettings() {
+  try {
+    const s = await window.__TAURI__.core.invoke('get_settings');
+    document.getElementById('token-input').value = s.token || '';
+    document.getElementById('interval-input').value = s.refresh_minutes || 5;
+    document.getElementById('show-text-check').checked = s.show_percent_text !== false;
+    document.getElementById('theme-select').value = s.theme || 'system';
+    document.getElementById('alert-threshold').value = s.alert_threshold ?? 20;
+    document.getElementById('auto-start-check').checked = s.auto_start === true;
+  } catch (e) {
+    console.error('loadSettings error:', e);
+  }
+}
+
+document.getElementById('theme-select').addEventListener('change', (e) => {
+  const theme = e.target.value;
+  document.documentElement.classList.remove('theme-light', 'theme-dark');
+  if (theme === 'light') document.documentElement.classList.add('theme-light');
+  else if (theme === 'dark') document.documentElement.classList.add('theme-dark');
+});
+
+document.getElementById('toggle-token').addEventListener('click', () => {
+  const inp = document.getElementById('token-input');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+});
+
+document.getElementById('interval-input').addEventListener('blur', (e) => {
+  let val = parseInt(e.target.value, 10);
+  if (isNaN(val) || val < 1) val = 1;
+  if (val > 60) val = 60;
+  e.target.value = val;
+});
+
+document.getElementById('alert-threshold').addEventListener('blur', (e) => {
+  let val = parseInt(e.target.value, 10);
+  if (isNaN(val) || val < 0) val = 0;
+  if (val > 100) val = 100;
+  e.target.value = val;
+});
+
+document.getElementById('btn-save').addEventListener('click', async () => {
+  const settings = {
+    token: document.getElementById('token-input').value.trim(),
+    refresh_minutes: parseInt(document.getElementById('interval-input').value, 10) || 5,
+    show_percent_text: document.getElementById('show-text-check').checked,
+    theme: document.getElementById('theme-select').value,
+    alert_threshold: parseInt(document.getElementById('alert-threshold').value, 10) || 20,
+    auto_start: document.getElementById('auto-start-check').checked,
+  };
+  try {
+    await window.__TAURI__.core.invoke('save_settings', { newSettings: settings });
+    await window.__TAURI__.core.invoke('toggle_autostart', { enabled: settings.auto_start }).catch(() => {});
+    const status = document.getElementById('save-status');
+    status.textContent = '✓ Saved! Refreshing balance…';
+    status.classList.add('success');
+    setTimeout(() => {
+      status.textContent = '';
+      status.classList.remove('success');
+    }, 2500);
+  } catch (e) {
+    document.getElementById('save-status').textContent = `Error: ${e}`;
+  }
+});
+
 // ── Keyboard Shortcuts ────────────────────
 
 document.addEventListener('keydown', async (e) => {
@@ -505,7 +578,7 @@ document.addEventListener('keydown', async (e) => {
     getCurrentWebviewWindow().close();
   } else if (mod && e.key === ',') {
     e.preventDefault();
-    await window.__TAURI__.core.invoke('open_settings_window');
+    switchTab('settings');
   }
 });
 

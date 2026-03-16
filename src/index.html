@@ -27,6 +27,7 @@
     <div class="tab-bar">
       <button class="tab-btn active" data-tab="balance">Balance</button>
       <button class="tab-btn" data-tab="logs">Logs</button>
+      <button class="tab-btn" data-tab="settings">Settings</button>
     </div>
 
     <!-- ═══ Balance View ═══ -->
@@ -147,6 +148,62 @@
         <button class="page-btn" id="btn-prev" disabled>← Prev</button>
         <span class="page-info" id="page-info">1 / 1</span>
         <button class="page-btn" id="btn-next" disabled>Next →</button>
+      </div>
+    </div>
+    <!-- ═══ Settings View ═══ -->
+    <div class="tab-content" id="view-settings">
+      <div class="settings-container">
+        <div class="form-group">
+          <label for="token-input">API Token</label>
+          <div class="token-wrap">
+            <input type="password" id="token-input" placeholder="Paste your Bearer token…" autocomplete="off" />
+            <button class="toggle-btn" id="toggle-token" title="Toggle visibility">
+              <svg id="eye-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                <circle cx="12" cy="12" r="3"></circle>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="interval-input">Refresh Interval (min)</label>
+          <input type="number" id="interval-input" min="1" max="60" value="5" />
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="show-text-check" checked />
+            <span>Show % in global status bar</span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label for="theme-select">Theme</label>
+          <select id="theme-select">
+            <option value="system">System</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="alert-threshold">Alert When Balance Below (%)</label>
+          <input type="number" id="alert-threshold" min="0" max="100" value="20" />
+        </div>
+
+        <div class="form-group checkbox-group">
+          <label class="checkbox-label">
+            <input type="checkbox" id="auto-start-check" />
+            <span>Launch at login</span>
+          </label>
+        </div>
+
+        <div class="settings-actions">
+          <button class="btn-save" id="btn-save">Save &amp; Apply</button>
+        </div>
+
+        <div class="save-status" id="save-status"></div>
       </div>
     </div>
   </div>
