@@ -2,6 +2,10 @@
 
 A macOS menu bar app built with Tauri + Rust that monitors your [Viber VN](https://viber.vn) API balance in real time.
 
+## Demo
+
+[▶ Watch the demo video](https://github.com/hientt53/vibervn_limit/releases/download/v0.1.2/showcase.mp4)
+
 ## Features
 
 - Menu bar tray icon with a live battery-style indicator showing remaining balance %
