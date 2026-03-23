@@ -509,6 +509,18 @@ async function loadSettings() {
     document.getElementById('theme-select').value = s.theme || 'system';
     document.getElementById('alert-threshold').value = s.alert_threshold ?? 20;
     document.getElementById('auto-start-check').checked = s.auto_start === true;
+    const sel = document.getElementById('api-server-select');
+    const customGroup = document.getElementById('api-custom-url-group');
+    const PRESETS = Array.from(sel.options).map(o => o.value).filter(v => v !== 'custom');
+    const apiUrl = s.api_base_url || PRESETS[0];
+    if (PRESETS.includes(apiUrl)) {
+      sel.value = apiUrl;
+      customGroup.style.display = 'none';
+    } else {
+      sel.value = 'custom';
+      customGroup.style.display = '';
+      document.getElementById('api-custom-url').value = apiUrl;
+    }
   } catch (e) {
     console.error('loadSettings error:', e);
   }
@@ -519,6 +531,11 @@ document.getElementById('theme-select').addEventListener('change', (e) => {
   document.documentElement.classList.remove('theme-light', 'theme-dark');
   if (theme === 'light') document.documentElement.classList.add('theme-light');
   else if (theme === 'dark') document.documentElement.classList.add('theme-dark');
+});
+
+document.getElementById('api-server-select').addEventListener('change', (e) => {
+  const customGroup = document.getElementById('api-custom-url-group');
+  customGroup.style.display = e.target.value === 'custom' ? '' : 'none';
 });
 
 document.getElementById('toggle-token').addEventListener('click', () => {
@@ -541,6 +558,20 @@ document.getElementById('alert-threshold').addEventListener('blur', (e) => {
 });
 
 document.getElementById('btn-save').addEventListener('click', async () => {
+  const serverSel = document.getElementById('api-server-select');
+  const status = document.getElementById('save-status');
+  let apiBaseUrl;
+  if (serverSel.value === 'custom') {
+    apiBaseUrl = document.getElementById('api-custom-url').value.trim().replace(/\/$/, '');
+    if (!apiBaseUrl || (!apiBaseUrl.startsWith('http://') && !apiBaseUrl.startsWith('https://'))) {
+      status.textContent = 'Please enter a valid URL';
+      status.classList.remove('success');
+      return;
+    }
+  } else {
+    apiBaseUrl = serverSel.value;
+  }
+
   const settings = {
     token: document.getElementById('token-input').value.trim(),
     refresh_minutes: parseInt(document.getElementById('interval-input').value, 10) || 5,
@@ -548,11 +579,11 @@ document.getElementById('btn-save').addEventListener('click', async () => {
     theme: document.getElementById('theme-select').value,
     alert_threshold: parseInt(document.getElementById('alert-threshold').value, 10) || 20,
     auto_start: document.getElementById('auto-start-check').checked,
+    api_base_url: apiBaseUrl,
   };
   try {
     await window.__TAURI__.core.invoke('save_settings', { newSettings: settings });
     await window.__TAURI__.core.invoke('toggle_autostart', { enabled: settings.auto_start }).catch(() => {});
-    const status = document.getElementById('save-status');
     status.textContent = '✓ Saved! Refreshing balance…';
     status.classList.add('success');
     setTimeout(() => {
@@ -560,7 +591,7 @@ document.getElementById('btn-save').addEventListener('click', async () => {
       status.classList.remove('success');
     }, 2500);
   } catch (e) {
-    document.getElementById('save-status').textContent = `Error: ${e}`;
+    status.textContent = `Error: ${e}`;
   }
 });
 

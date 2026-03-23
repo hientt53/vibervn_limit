@@ -31,6 +31,10 @@ pub fn load(app: &AppHandle) -> Result<AppSettings, String> {
             .get("auto_start")
             .and_then(|v| v.as_bool())
             .unwrap_or(false),
+        api_base_url: store
+            .get("api_base_url")
+            .and_then(|v| v.as_str().map(|s| s.to_string()))
+            .unwrap_or_else(|| "https://viber.claudegateway.site".to_string()),
     };
     Ok(settings)
 }
@@ -43,5 +47,6 @@ pub fn save(app: &AppHandle, settings: &AppSettings) -> Result<(), String> {
     store.set("theme", serde_json::json!(settings.theme));
     store.set("alert_threshold", serde_json::json!(settings.alert_threshold));
     store.set("auto_start", serde_json::json!(settings.auto_start));
+    store.set("api_base_url", serde_json::json!(settings.api_base_url));
     store.save().map_err(|e| e.to_string())
 }

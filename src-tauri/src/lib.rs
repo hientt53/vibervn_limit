@@ -34,10 +34,13 @@ pub struct AppSettings {
     pub alert_threshold: f64,
     #[serde(default)]
     pub auto_start: bool,
+    #[serde(default = "default_api_base_url")]
+    pub api_base_url: String,
 }
 
 fn default_theme() -> String { "system".to_string() }
 fn default_threshold() -> f64 { 20.0 }
+fn default_api_base_url() -> String { "https://viber.claudegateway.site".to_string() }
 
 impl Default for AppSettings {
     fn default() -> Self {
@@ -48,6 +51,7 @@ impl Default for AppSettings {
             theme: default_theme(),
             alert_threshold: default_threshold(),
             auto_start: false,
+            api_base_url: default_api_base_url(),
         }
     }
 }
@@ -85,12 +89,13 @@ async fn save_settings(
 
     // Fetch balance immediately if token is set
     let token = new_settings.token.clone();
+    let api_base_url = new_settings.api_base_url.clone();
     if !token.is_empty() {
         let state_clone = state.inner().clone();
         let app_clone = app.clone();
         tauri::async_runtime::spawn(async move {
             let show_text = state_clone.settings.lock().unwrap().show_percent_text;
-            match api::fetch_balance(&token).await {
+            match api::fetch_balance(&token, &api_base_url).await {
                 Ok(balance) => {
                     let label = format_label(&balance, show_text);
                     update_tray(&app_clone, Some(balance.percent), show_text, &label);
@@ -143,14 +148,17 @@ async fn export_logs_csv(
     start_timestamp: Option<i64>,
     end_timestamp: Option<i64>,
 ) -> Result<String, String> {
-    let token = state.settings.lock().unwrap().token.clone();
+    let (token, api_base_url) = {
+        let s = state.settings.lock().unwrap();
+        (s.token.clone(), s.api_base_url.clone())
+    };
     if token.is_empty() {
         return Err("No token configured".to_string());
     }
     // Fetch all logs (up to 1000)
     let logs = api::fetch_logs(
         &token, 0, 1000, log_type,
-        model_name.as_deref(), start_timestamp, end_timestamp,
+        model_name.as_deref(), start_timestamp, end_timestamp, &api_base_url,
     ).await?;
     // Build CSV
     let mut csv = String::from("Time,Model,Tokens,Cost\n");
@@ -167,14 +175,17 @@ async fn get_daily_stats(
     state: tauri::State<'_, Arc<AppState>>,
     days: i32,
 ) -> Result<serde_json::Value, String> {
-    let token = state.settings.lock().unwrap().token.clone();
+    let (token, api_base_url) = {
+        let s = state.settings.lock().unwrap();
+        (s.token.clone(), s.api_base_url.clone())
+    };
     if token.is_empty() {
         return Err("No token configured".to_string());
     }
     // Use log stats to get daily breakdown
     let now = chrono::Utc::now().timestamp();
     let start = now - (days as i64 * 86400);
-    api::fetch_log_stats(&token, 0, None, Some(start), Some(now)).await
+    api::fetch_log_stats(&token, 0, None, Some(start), Some(now), &api_base_url).await
 }
 
 #[tauri::command]
@@ -187,7 +198,10 @@ async fn get_logs(
     start_timestamp: Option<i64>,
     end_timestamp: Option<i64>,
 ) -> Result<api::LogsPage, String> {
-    let token = state.settings.lock().unwrap().token.clone();
+    let (token, api_base_url) = {
+        let s = state.settings.lock().unwrap();
+        (s.token.clone(), s.api_base_url.clone())
+    };
     if token.is_empty() {
         return Err("No token configured".to_string());
     }
@@ -199,6 +213,7 @@ async fn get_logs(
         model_name.as_deref(),
         start_timestamp,
         end_timestamp,
+        &api_base_url,
     )
     .await
 }
@@ -211,7 +226,10 @@ async fn get_log_stats(
     start_timestamp: Option<i64>,
     end_timestamp: Option<i64>,
 ) -> Result<serde_json::Value, String> {
-    let token = state.settings.lock().unwrap().token.clone();
+    let (token, api_base_url) = {
+        let s = state.settings.lock().unwrap();
+        (s.token.clone(), s.api_base_url.clone())
+    };
     if token.is_empty() {
         return Err("No token configured".to_string());
     }
@@ -221,6 +239,7 @@ async fn get_log_stats(
         model_name.as_deref(),
         start_timestamp,
         end_timestamp,
+        &api_base_url,
     )
     .await
 }
@@ -259,9 +278,9 @@ fn spawn_refresh_loop(app: AppHandle, state: Arc<AppState>) {
         loop {
             ticker.tick().await;
 
-            let (token, refresh_mins, show_text) = {
+            let (token, refresh_mins, show_text, base_url) = {
                 let s = state.settings.lock().unwrap();
-                (s.token.clone(), s.refresh_minutes, s.show_percent_text)
+                (s.token.clone(), s.refresh_minutes, s.show_percent_text, s.api_base_url.clone())
             };
 
             // Re-schedule if interval changed
@@ -276,7 +295,7 @@ fn spawn_refresh_loop(app: AppHandle, state: Arc<AppState>) {
                 continue;
             }
 
-            match api::fetch_balance(&token).await {
+            match api::fetch_balance(&token, &base_url).await {
                 Ok(balance) => {
                     let label = format_label(&balance, show_text);
                     update_tray(&app, Some(balance.percent), show_text, &label);

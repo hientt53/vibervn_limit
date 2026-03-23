@@ -26,6 +26,7 @@ This is needed because the app isn't signed with an Apple Developer certificate.
 - Model cost breakdown and 7-day usage chart
 - Export logs to CSV
 - Low balance notification alert (configurable threshold)
+- Configurable API server — switch between presets or use a custom self-hosted endpoint
 - Light / Dark / System theme
 - Launch at login (auto-start)
 - Configurable refresh interval (1–60 minutes)
@@ -57,6 +58,7 @@ On first launch, click the tray icon → Settings (or press `⌘,`) and enter yo
 
 | Setting | Default | Description |
 |---|---|---|
+| API Server | viber.claudegateway.site | API endpoint — choose a preset or enter a custom URL |
 | Token | — | Your Viber VN API token |
 | Refresh interval | 5 min | How often to poll the API |
 | Alert threshold | 20% | Notify when balance drops below this |
@@ -68,10 +70,8 @@ On first launch, click the tray icon → Settings (or press `⌘,`) and enter yo
 
 ```
 src/              # Frontend (HTML + vanilla JS)
-  index.html      # Popup window
-  popup.js        # Balance view, logs, charts
-  settings.html   # Settings window
-  settings.js     # Settings form logic
+  index.html      # Popup window (balance, logs, settings tabs)
+  popup.js        # All frontend logic
   styles.css      # Shared styles
 
 src-tauri/        # Rust backend (Tauri)

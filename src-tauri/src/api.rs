@@ -24,7 +24,7 @@ struct TokenInfo {
     expired_time: Option<i64>,
 }
 
-pub async fn fetch_balance(token: &str) -> Result<BalanceInfo, String> {
+pub async fn fetch_balance(token: &str, base_url: &str) -> Result<BalanceInfo, String> {
     let client = reqwest::Client::builder()
         .gzip(true)
         .timeout(std::time::Duration::from_secs(10))
@@ -32,7 +32,7 @@ pub async fn fetch_balance(token: &str) -> Result<BalanceInfo, String> {
         .map_err(|e| e.to_string())?;
 
     let resp = client
-        .get("https://viber.claudegateway.site/api/balance/check")
+        .get(&format!("{}/api/balance/check", base_url))
         .header("Authorization", format!("Bearer {}", token))
         .header("Accept", "application/json")
         .header("New-API-User", "-1")
@@ -156,12 +156,13 @@ pub async fn fetch_logs(
     model_name: Option<&str>,
     start_timestamp: Option<i64>,
     end_timestamp: Option<i64>,
+    base_url: &str,
 ) -> Result<LogsPage, String> {
     let client = build_client()?;
 
     let mut url = format!(
-        "https://viber.claudegateway.site/api/balance/logs?p={}&page_size={}&type={}",
-        page, page_size, log_type
+        "{}/api/balance/logs?p={}&page_size={}&type={}",
+        base_url, page, page_size, log_type
     );
     if let Some(m) = model_name {
         if !m.is_empty() {
@@ -201,12 +202,13 @@ pub async fn fetch_log_stats(
     model_name: Option<&str>,
     start_timestamp: Option<i64>,
     end_timestamp: Option<i64>,
+    base_url: &str,
 ) -> Result<serde_json::Value, String> {
     let client = build_client()?;
 
     let mut url = format!(
-        "https://viber.claudegateway.site/api/balance/logs/stat?type={}",
-        log_type
+        "{}/api/balance/logs/stat?type={}",
+        base_url, log_type
     );
     if let Some(m) = model_name {
         if !m.is_empty() {
